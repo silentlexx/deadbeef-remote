@@ -35,7 +35,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "remote.h"
 #include <deadbeef/deadbeef.h>
 
-#define trace(fmt,...)
+#define trace(...) { fprintf(stderr, __VA_ARGS__); }
+//#define trace(fmt,...)
 #define BUF_SIZE 5
 
 static DB_remote_plugin_t plugin;
@@ -45,6 +46,14 @@ static uintptr_t remote_cond;
 static intptr_t remote_tid; // thread id?
 static int remote_stopthread;
 int sfd; // Socket fd
+
+enum {
+    PARAM_LISTEN = 0,
+    PARAM_PORT = 1,
+    PARAM_BOX = 2,
+    PARAM_COUNT
+};
+
 
 /*
   Listen for UDP packets for actions to perform.
@@ -85,32 +94,37 @@ perform_action (char buf) {
 static void
 remote_listen (void) {
     // start listening for udp packets.
-    struct addrinfo hints, *results;
+    struct addrinfo hints, *res;
     int status;
 
     memset(&hints, 0, sizeof hints); // Makes sure the struct is empty, thanks beej.
 
-    hints.ai_family = AF_UNSPEC; // Use IPv4 or IPv6.
-    hints.ai_socktype = SOCK_DGRAM; // Using UDP
-    hints.ai_flags = AI_PASSIVE; // Don't need to know our local IP. Thanks Unix!
-    hints.ai_protocol = 0;
+const char* hostname=0; /* wildcard */
 
-    deadbeef->conf_lock();
-    if ((status = getaddrinfo(deadbeef->conf_get_str_fast ("remote.listen",""),
-			      deadbeef->conf_get_str_fast ("remote.port",""), &hints, &results)) != 0) {
-	fprintf (stderr, "getaddrinfo error: %s\n", gai_strerror(status));
+hints.ai_family=AF_UNSPEC;
+hints.ai_socktype=SOCK_DGRAM;
+hints.ai_protocol=0;
+hints.ai_flags=AI_PASSIVE|AI_ADDRCONFIG;
+
+    if ((status = getaddrinfo(hostname, deadbeef->conf_get_str_fast ("remote.port","1111"), &hints, &res)) != 0) {
+
+	   fprintf (stderr, "getaddrinfo error: %s\n", gai_strerror(status));
+       return;     
     }
     deadbeef->conf_unlock();
     // Do stuff
-    if ((sfd = socket (results->ai_family, results->ai_socktype, results->ai_protocol)) != 0) {
-	trace ("couldn't create socket'");
-    }
-    if ((bind(sfd, results->ai_addr, results->ai_addrlen)) != 0) {
-	trace ("couldn't bind'");
-    }
+ do{/* each of the returned IP address is tried*/
+    sfd=socket(res->ai_family, res->ai_socktype, res->ai_protocol);
+    if(sfd>= 0)
+      break; /*success*/
+  }while ((res=res->ai_next) != NULL);
 
+    if (bind(sfd,res->ai_addr,res->ai_addrlen)==-1) {
+        trace("Bind error\n");
+        return;
+    }
     // Done with results
-    freeaddrinfo (results);
+    freeaddrinfo (res);
 }
 
 static void
@@ -166,6 +180,7 @@ plugin_start (void) {
     remote_mutex = deadbeef->mutex_create_nonrecursive ();
     //remote_cond = deadbeef->cond_create ();
     remote_listen ();
+
     remote_tid = deadbeef->thread_start (remote_thread, NULL);
     //
     return 0;
@@ -266,9 +281,8 @@ action_toggle_stop_after_current_cb (struct DB_plugin_action_s *action, DB_playI
 }
 
 static const char settings_dlg[] =
-    "property \"Enable remote - This don't do nothin' right now\" checkbox remote.enable 0;"
-    "property \"Listen IP\" entry remote.listen \"\";\n"
-    "property \"Port\" entry remote.port \"\";\n"
+    "property \"Enable remote - This don't do nothin' right now\" checkbox remote.enable 1;"
+    "property \"Port\" entry remote.port \"1111\";\n"
 ;
 
 
@@ -279,7 +293,7 @@ static DB_remote_plugin_t plugin = {
     .misc.plugin.version_major = 0,
     .misc.plugin.version_minor = 1,
     .misc.plugin.type = DB_PLUGIN_MISC,
-    .misc.plugin.id = "remote",
+    .misc.plugin.id = "ddb_remote",
     .misc.plugin.name = "Remote control",
     .misc.plugin.descr = "Allows one to control player remotely over LAN",
     .misc.plugin.copyright =
@@ -312,7 +326,7 @@ static DB_remote_plugin_t plugin = {
 };
 
 DB_plugin_t *
-remote_load (DB_functions_t *api) {
+ddb_remote_load (DB_functions_t *api) {
     deadbeef = api;
     return DB_PLUGIN (&plugin);
 }
