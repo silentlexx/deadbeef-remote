@@ -1,6 +1,5 @@
 package com.silentlexx.deadbeefcontrol;
 
-import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Handler;
 import android.util.Log;
@@ -10,8 +9,13 @@ import java.net.DatagramSocket;
 import java.net.InetAddress;
 
 public class DBFClient {
+    public interface DBFResult {
+        public void giveResult(String res);
+    }
 
-    private final static int PACKETSIZE = 10 ;
+    private final static String NOT_NEED_ANSWER = "not_need_answer";
+    private final static String NEED_ANSWER = "need_answer";
+    private final static int PACKETSIZE = 100 ;
 
     public static final String PLAY = "1";
     public static final String PREV = "2";
@@ -24,27 +28,40 @@ public class DBFClient {
     private String mIp;
     private String mPort;
 
-    private Context mCtx = null;
+
+    private DBFResult mCtx = null;
 
     private Handler h = new Handler();
 
-    DBFClient(Context ctx, String ip, String port){
+    DBFClient(DBFResult ctx, String ip, String port){
         mCtx = ctx;
         mIp = ip;
         mPort = port;
+
     }
 
     public void send(final String cmd) {
+            new sending().execute(NOT_NEED_ANSWER, cmd);
+    }
 
-        new sending().execute(cmd);
+    public void send(final String cmd, boolean na) {
+        if(na) {
+            new sending().execute(NEED_ANSWER, cmd);
+        } else {
+            new sending().execute(NOT_NEED_ANSWER, cmd);
+        }
 
-            }
+    }
 
+    private void result(String res){
+        mCtx.giveResult(res);
+    }
 
     private class sending extends AsyncTask<String, Void, String> {
         @Override
         protected String doInBackground(String... cmd) {
             DatagramSocket socket = null;
+
 
             try {
                 // Convert the arguments first, to ensure that they are valid
@@ -55,34 +72,40 @@ public class DBFClient {
                 socket = new DatagramSocket();
 
                 // Construct the datagram packet
-                byte[] data = cmd[0].getBytes();
+                byte[] data = cmd[1].getBytes();
                 DatagramPacket packet = new DatagramPacket(data, data.length, host, port);
 
                 // Send it
                 socket.send(packet);
 
-                // Set a receive timeout, 2000 milliseconds
-                //socket.setSoTimeout( 2000 ) ;
+                if(cmd[0].equals(NEED_ANSWER)) {
+                    // Set a receive timeout, 2000 milliseconds
+                    socket.setSoTimeout(2000) ;
 
-                // Prepare the packet for receive
-                // packet.setData( new byte[PACKETSIZE] ) ;
+                    // Prepare the packet for receive
+                     packet.setData(new byte[PACKETSIZE]) ;
 
-                // Wait for a response from the server
-                // socket.receive( packet ) ;
+                    // Wait for a response from the server
+                     socket.receive( packet ) ;
 
-                // Print the response
-                // System.out.println( new String(packet.getData()) ) ;
-                if (socket != null)
-                    socket.close();
+                    // Print the response
+                    if (socket != null) socket.close();
+                    return new String(packet.getData()) ;
+
+                }
+
+                if (socket != null) socket.close();
             } catch (Exception e) {
                 Log.e("UDP", "Sendind error", e);
                 //  System.out.println( e ) ;
             }
+
             return null;
         }
 
         @Override
-        protected void onPostExecute(String result) {
+        protected void onPostExecute(String res) {
+            result(res);
         }
 
         @Override

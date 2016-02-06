@@ -1,0 +1,24 @@
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+
+    <EditTextPreference
+        android:capitalize="none"
+        android:defaultValue="@string/def_host"
+        android:key="host"
+        android:maxLines="1"
+        android:selectAllOnFocus="true"
+        android:singleLine="true"
+        android:title="Host name or IP" />
+
+    <EditTextPreference
+        android:digits="0123456789"
+        android:capitalize="none"
+        android:defaultValue="11122"
+        android:key="port"
+        android:maxLines="1"
+        android:selectAllOnFocus="true"
+        android:singleLine="true"
+        android:title="Port" />
+
+
+</PreferenceScreen>
