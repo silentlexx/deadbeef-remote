@@ -3,6 +3,7 @@
 BSD License
 
 Copyright (C) 2013 Henry Case <rectifier04@gmail.com>
+Copyright (C) 2016 Alexey Makhno <silentlexx@gmail.com>
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification,
@@ -35,8 +36,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "remote.h"
 #include <deadbeef/deadbeef.h>
 
-#define trace(...) { fprintf(stderr, __VA_ARGS__); }
-//#define trace(fmt,...)
+//#define trace(...) { fprintf(stderr, __VA_ARGS__); }
+#define trace(fmt,...)
 #define BUF_SIZE 5
 
 static DB_remote_plugin_t plugin;
@@ -106,7 +107,7 @@ hints.ai_socktype=SOCK_DGRAM;
 hints.ai_protocol=0;
 hints.ai_flags=AI_PASSIVE|AI_ADDRCONFIG;
 
-    if ((status = getaddrinfo(hostname, deadbeef->conf_get_str_fast ("remote.port","1111"), &hints, &res)) != 0) {
+    if ((status = getaddrinfo(hostname, deadbeef->conf_get_str_fast ("remote.port","11122"), &hints, &res)) != 0) {
 
 	   fprintf (stderr, "getaddrinfo error: %s\n", gai_strerror(status));
        return;     
@@ -282,7 +283,7 @@ action_toggle_stop_after_current_cb (struct DB_plugin_action_s *action, DB_playI
 
 static const char settings_dlg[] =
     "property \"Enable remote - This don't do nothin' right now\" checkbox remote.enable 1;"
-    "property \"Port\" entry remote.port \"1111\";\n"
+    "property \"Port\" entry remote.port \"11122\";\n"
 ;
 
 
@@ -299,6 +300,7 @@ static DB_remote_plugin_t plugin = {
     .misc.plugin.copyright =
         "BSD License\n"
         "Copyright (C) 2013 Henry Case <rectifier04@gmail.com>\n"
+        "Copyright (C) 2016 Alexey Makhno <silentlexx@gmail.com>\n"
         "\n"
         "Redistribution and use in source and binary forms, with or without modification, are permitted\n"
         "provided that the following conditions are met:\n"
@@ -319,7 +321,7 @@ static DB_remote_plugin_t plugin = {
         "ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY\n"
         "OF SUCH DAMAGE.\n"
     ,
-    .misc.plugin.website = "https://github.com/Aerol/deadbeef-remote",
+    .misc.plugin.website = "https://github.com/silentlexx/deadbeef-remote/",
     .misc.plugin.start = plugin_start,
     .misc.plugin.stop = plugin_stop,
     .misc.plugin.configdialog = settings_dlg,
