@@ -40,6 +40,7 @@ public class MainActivity extends AppCompatActivity implements DBFClient.DBFResu
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        toolbar.setLogo(R.mipmap.ic_launcher);
 //        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
 //        fab.setOnClickListener(new View.OnClickListener() {
 //            @Override
@@ -96,7 +97,7 @@ public class MainActivity extends AppCompatActivity implements DBFClient.DBFResu
         sendUDP(DBFClient.PREV);
     }
 
-    public void random(View v) {
+    public void shuffle(View v) {
         sendUDP(DBFClient.PLAY_RANDOM);
     }
 
@@ -122,6 +123,10 @@ public class MainActivity extends AppCompatActivity implements DBFClient.DBFResu
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
             startPrefs();
+            return true;
+        } if (id == R.id.action_stop_after) {
+            sendUDP(DBFClient.STOP_AFTER_CURRENT);
+            Toast.makeText(this, getString(R.string.stop_after), Toast.LENGTH_SHORT).show();
             return true;
         }
 

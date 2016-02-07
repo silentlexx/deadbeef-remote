@@ -8,7 +8,7 @@
         android:maxLines="1"
         android:selectAllOnFocus="true"
         android:singleLine="true"
-        android:title="Host name or IP" />
+        android:title="@string/pref_host" />
 
     <EditTextPreference
         android:digits="0123456789"
@@ -18,7 +18,7 @@
         android:maxLines="1"
         android:selectAllOnFocus="true"
         android:singleLine="true"
-        android:title="Port" />
+        android:title="@string/pref_post" />
 
 
 </PreferenceScreen>

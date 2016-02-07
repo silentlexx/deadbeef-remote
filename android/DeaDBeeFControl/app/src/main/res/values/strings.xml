@@ -7,6 +7,10 @@
     <string name="def_port">11122</string>
     <!-- Strings related to Settings -->
 
+    <string name="pref_host">Host name or IP</string>
+    <string name="pref_post">Port</string>
+    <string name="shuffle">Toggle Shuffle</string>
+    <string name="stop_after">Toggle: stop after track</string>
     <!-- Example General settings -->
     <string name="pref_header_general">General</string>
 
