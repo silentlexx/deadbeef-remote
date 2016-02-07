@@ -78,11 +78,11 @@ public class MainActivity extends AppCompatActivity implements DBFClient.DBFResu
     }
 
     public void play(View v) {
-        sendUDP(DBFClient.PLAY);
+        sendUDP(DBFClient.PLAY_PAUSE);
     }
 
     public void pause(View v) {
-        sendUDP(DBFClient.TOGGLE_PAUSE);
+        sendUDP(DBFClient.PLAY_PAUSE);
     }
 
     public void stop(View v) {
@@ -105,6 +105,21 @@ public class MainActivity extends AppCompatActivity implements DBFClient.DBFResu
         sendUDP(DBFClient.STOP_AFTER_CURRENT);
     }
 
+    public void volup(View v) {
+        sendUDP(DBFClient.VOL_UP);
+    }
+
+    public void voldown(View v) {
+        sendUDP(DBFClient.VOL_DOWN);
+    }
+
+    public void seekfw(View v) {
+        sendUDP(DBFClient.SEEK_FW);
+    }
+
+    public void seekbk(View v) {
+        sendUDP(DBFClient.SEEK_BK);
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

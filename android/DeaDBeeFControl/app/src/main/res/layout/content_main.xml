@@ -15,6 +15,38 @@
     android:gravity="center"
     android:background="@color/colorBackground">
 
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="bottom|center">
+
+        <at.markushi.ui.CircleButton
+            android:layout_width="@dimen/buttons"
+            android:layout_height="@dimen/buttons"
+            android:src="@drawable/skip_backward"
+            app:cb_color="@color/colorButton"
+            app:cb_pressedRingWidth="@dimen/btn_right"
+            android:onClick="seekbk"  />
+
+        <at.markushi.ui.CircleButton
+            android:layout_width="@dimen/buttons"
+            android:layout_height="@dimen/buttons"
+            android:src="@drawable/volume_high"
+            app:cb_color="@color/colorButton"
+            app:cb_pressedRingWidth="@dimen/btn_right"
+            android:onClick="volup"  />
+
+        <at.markushi.ui.CircleButton
+            android:layout_width="@dimen/buttons"
+            android:layout_height="@dimen/buttons"
+            android:src="@drawable/skip_forward"
+            app:cb_color="@color/colorButton"
+            app:cb_pressedRingWidth="@dimen/btn_right"
+            android:onClick="seekfw"  />
+    </LinearLayout>
+
     <LinearLayout
         android:orientation="horizontal"
         android:layout_width="wrap_content"
@@ -32,7 +64,7 @@
         <at.markushi.ui.CircleButton
             android:layout_width="@dimen/buttons"
             android:layout_height="@dimen/buttons"
-            android:src="@drawable/play"
+            android:src="@drawable/play_pause"
             app:cb_color="@color/colorButton"
             app:cb_pressedRingWidth="@dimen/btn_right"
             android:onClick="play"  />
@@ -63,10 +95,10 @@
         <at.markushi.ui.CircleButton
             android:layout_width="@dimen/buttons"
             android:layout_height="@dimen/buttons"
-            android:src="@drawable/pause"
+            android:src="@drawable/volume_medium"
             app:cb_color="@color/colorButton"
             app:cb_pressedRingWidth="@dimen/btn_right"
-            android:onClick="pause"  />
+            android:onClick="voldown"  />
 
         <at.markushi.ui.CircleButton
             android:layout_width="@dimen/buttons"

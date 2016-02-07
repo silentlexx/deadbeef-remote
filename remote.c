@@ -78,7 +78,7 @@ perform_action (char buf) {
 	action_stop_cb (NULL, NULL);
 	break;
     case '5':
-	action_toggle_pause_cb (NULL, NULL);
+	action_play_pause_cb (NULL, NULL);
 	break;
     case '6':
 	action_play_random_cb (NULL, NULL);
@@ -86,6 +86,18 @@ perform_action (char buf) {
     case '7':
 	action_toggle_stop_after_current_cb (NULL, NULL);
 	break;
+    case '8':
+    action_volume_up_cb (NULL, NULL);
+    break;
+    case '9':
+    action_volume_down_cb (NULL, NULL);
+    break;    
+    case 'a':
+    action_seek_forward_cb (NULL, NULL);
+    break;
+    case 'b':
+    action_seek_backward_cb (NULL, NULL);
+    break;
     default:
 	break;
     }

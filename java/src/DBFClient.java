@@ -6,13 +6,17 @@ public class DBFClient {
 	
 	private final static int PACKETSIZE = 100 ;
 	 
-	public static final String PLAY = "1";
-	public static final String PREV = "2";
-	public static final String NEXT = "3";
-	public static final String STOP = "4";
-	public static final String PAUSE = "5";
-	public static final String PLAY_RANDOM = "6";
-	public static final String STOP_AFTER_CURRENT = "7";
+    public static final String PLAY = "1";
+    public static final String PREV = "2";
+    public static final String NEXT = "3";
+    public static final String STOP = "4";
+    public static final String PLAY_PAUSE = "5";
+    public static final String PLAY_RANDOM = "6";
+    public static final String STOP_AFTER_CURRENT = "7";
+    public static final String VOL_UP = "8";
+    public static final String VOL_DOWN = "9";
+    public static final String SEEK_FW = "a";
+    public static final String SEEK_BK = "b";
 	
 	
 	private String mIp;
