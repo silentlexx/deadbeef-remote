@@ -4,15 +4,16 @@ import java.net.InetAddress;
 
 public class DBFClient {
 	
-	private final static int PACKETSIZE = 10 ;
+	private final static int PACKETSIZE = 100 ;
 	 
 	public static final String PLAY = "1";
 	public static final String PREV = "2";
 	public static final String NEXT = "3";
 	public static final String STOP = "4";
-	public static final String TOGGLE_PAUSE = "5";
+	public static final String PAUSE = "5";
 	public static final String PLAY_RANDOM = "6";
 	public static final String STOP_AFTER_CURRENT = "7";
+	
 	
 	private String mIp;
 	private String mPort;
@@ -21,8 +22,12 @@ public class DBFClient {
 		mIp = ip;
 		mPort = port;
 	}
-	
+
 	public void send(String cmd){   
+		send(cmd, false);
+	}
+	
+	public String send(String cmd, boolean answer){   
 		 DatagramSocket socket = null ;
 
 	      try
@@ -41,6 +46,7 @@ public class DBFClient {
 	         // Send it
 	         socket.send( packet ) ;
 
+	         if(answer){
 	         // Set a receive timeout, 2000 milliseconds
 	         socket.setSoTimeout( 2000 ) ;
 
@@ -54,12 +60,18 @@ public class DBFClient {
 	        // System.out.println( new String(packet.getData()) ) ;
 	         if( socket != null )
 		            socket.close() ;
+	          return new String(packet.getData());
+	         }
+	         
+	         if( socket != null )
+		            socket.close() ;
 	      }
 	      catch( Exception e )
 	      {
 	       //  System.out.println( e ) ;
 	      }
-	
+	      
+	      return null;
 
 	}
 	
