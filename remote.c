@@ -48,6 +48,9 @@ static intptr_t remote_tid; // thread id?
 static int remote_stopthread;
 int sfd; // Socket fd
 
+static int enable;
+static int kmix;
+
 enum {
     PARAM_LISTEN = 0,
     PARAM_PORT = 1,
@@ -118,6 +121,9 @@ hints.ai_family=AF_UNSPEC;
 hints.ai_socktype=SOCK_DGRAM;
 hints.ai_protocol=0;
 hints.ai_flags=AI_PASSIVE|AI_ADDRCONFIG;
+  
+    deadbeef->conf_lock();
+
 
     if ((status = getaddrinfo(hostname, deadbeef->conf_get_str_fast ("remote.port","11122"), &hints, &res)) != 0) {
 
@@ -187,6 +193,17 @@ remote_thread (void *ha) {
 
 static int
 plugin_start (void) {
+    deadbeef->conf_lock();
+
+        enable = deadbeef->conf_get_int ("remote.enable", 1);
+        kmix = deadbeef->conf_get_int ("remote.kmix", 0);
+
+    deadbeef->conf_unlock();
+
+    if(!enable) {
+        return 0;
+    }
+
     // Start plugin (duh)
     // Setup UDP listener to do stuff when receiving special datagrams
     remote_stopthread = 0;
@@ -201,6 +218,11 @@ plugin_start (void) {
 
 static int
 plugin_stop (void) {
+
+    if(!enable) {
+        return 0;
+    }
+
     // Stop listener and cleanup.
     if (remote_tid) {
 	remote_stopthread = 1;
@@ -274,13 +296,21 @@ action_seek_backward_cb (struct DB_plugin_action_s *action, DB_playItem_t *it) {
 
 int
 action_volume_up_cb (struct DB_plugin_action_s *action, DB_playItem_t *it) {
-    deadbeef->volume_set_db (deadbeef->volume_get_db () + 2);
+    if(kmix){        
+        system("qdbus org.kde.kmix /kmix/KMixWindow/actions/increase_volume org.qtproject.Qt.QAction.trigger");
+    } else {
+        deadbeef->volume_set_db (deadbeef->volume_get_db () + 2);
+    }
     return 0;
 }
 
 int
 action_volume_down_cb (struct DB_plugin_action_s *action, DB_playItem_t *it) {
-    deadbeef->volume_set_db (deadbeef->volume_get_db () - 2);
+    if(kmix){
+        system("qdbus org.kde.kmix /kmix/KMixWindow/actions/decrease_volume org.qtproject.Qt.QAction.trigger");
+    } else {
+        deadbeef->volume_set_db (deadbeef->volume_get_db () - 2);
+    }
     return 0;
 }
 
@@ -294,8 +324,9 @@ action_toggle_stop_after_current_cb (struct DB_plugin_action_s *action, DB_playI
 }
 
 static const char settings_dlg[] =
-    "property \"Enable remote - This don't do nothin' right now\" checkbox remote.enable 1;"
+    "property \"Enable remote (need restart)\" checkbox remote.enable 1;"
     "property \"Port\" entry remote.port \"11122\";\n"
+    "property \"Volume change via KMix\" checkbox remote.kmix 0;"
 ;
 
 
